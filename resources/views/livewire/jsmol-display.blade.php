@@ -18,7 +18,7 @@
                     // serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
                     use: "HTML5",     // "HTML5" or "Java" (case-insensitive)
                     readyFunction: null, // only used in the HTML5 modality
-                    script: "load /mofs/ums_{{ $node }}_{{ $linker }}_opt.cif"{{-- $entry->id --}},
+                    script: "load /api/mofs/ums_{{ $node }}_{{ $linker }}_opt.cif"{{-- $entry->id --}},
                     // menuFile: "",
                     // serverURL: "php/jsmol.php",  // this is not applied by default; you should set this value explicitly
                     bondWidth: 8,

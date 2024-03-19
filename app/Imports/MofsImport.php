@@ -40,7 +40,7 @@ class MofsImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunk
     public function model(array $row)
     {
         unset($row[0]);
-        dump(Arr::only($row, ['node', 'linker']));
+        // dump(Arr::only($row, ['node', 'linker']));
         $mofData = [
             'name'        => Arr::get($row, 'name'),
             'topology'    => Arr::get($row, 'topology'),
