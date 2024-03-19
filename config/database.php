@@ -68,8 +68,8 @@ return [
             'host' => env('MONGODB_HOST'),
             'port' => env('MONGODB_PORT'),
             'database' => env('DB_DATABASE'),
-            'username' => env('DB_USERNAME'),
-            'password' => env('DB_PASSWORD'),
+            'username' => env('MONGODB_USERNAME'),
+            'password' => env('MONGODB_PASSWORD'),
             'options' => [
                 'database' => env('DB_AUTHENTICATION_DATABASE', 'admin'),
             ],

@@ -47,7 +47,6 @@ services:
                 - '-p${DB_PASSWORD}'
             retries: 3
             timeout: 5s
-
     mongo:
         image: 'mongo:4.4'
         restart: always
