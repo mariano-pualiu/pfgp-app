@@ -6,7 +6,7 @@ use App\Enums\ElementEnum;
 use App\Enums\MetaProperties\Abbr;
 use App\Enums\MetaProperties\Symbol;
 use App\Enums\MolecularTypeEnum;
-use App\Models\MolecularBuildingBlock;
+use App\Models\BuildingBlock;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -33,6 +33,7 @@ class ImportMolecularBuildingBlocks extends Command
     public function handle()
     {
         $files = Storage::disk('local')->files('pfgp/bbs');
+        // dd($files);
 
         $this->info('Importing Molecular Building Blocks...');
 
@@ -80,7 +81,7 @@ class ImportMolecularBuildingBlocks extends Command
                     throw new \Exception("Error opening the file.", 1);
                 }
 
-                MolecularBuildingBlock::create([
+                BuildingBlock::create([
                     'code'     => $name,
                     'elements' => collect($elements)
                         ->map(fn ($count, $symbol) => [

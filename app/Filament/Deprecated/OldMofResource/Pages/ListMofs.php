@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\MofResource\Pages;
+namespace App\Filament\Resources\OldMofResource\Pages;
 
 use App\Filament\Resources\MofResource;
 use Filament\Actions;
@@ -13,7 +13,7 @@ class ListMofs extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Actions\CreateAction::make(),
+            Actions\CreateAction::make(),
         ];
     }
 }

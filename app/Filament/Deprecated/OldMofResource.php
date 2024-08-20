@@ -6,8 +6,8 @@ use App\Enums\ElementEnum;
 use App\Enums\SymetryEnum;
 use App\Enums\Topology3dEnum;
 use App\Enums\UnitEnum;
-use App\Filament\Resources\MofResource\Pages;
-use App\Filament\Resources\MofResource\RelationManagers;
+use App\Filament\Resources\OldMofResource\Pages;
+use App\Filament\Resources\OldMofResource\RelationManagers;
 use App\Infolists\Components\JsMolDisplayEntry;
 use App\Models\Mof;
 use Filament\Forms;
@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
-class MofResource extends Resource
+class OldMofResource extends Resource
 {
     protected static ?string $model = Mof::class;
 
@@ -473,7 +473,7 @@ class MofResource extends Resource
     {
         return [
             'index' => Pages\ListMofs::route('/'),
-            'view' => Pages\ViewMof::route('/{record}'),
+            // 'view' => Pages\ViewMof::route('/{record}'),
         ];
     }    
 }

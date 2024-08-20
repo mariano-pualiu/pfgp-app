@@ -7,8 +7,9 @@ use Livewire\Component;
 
 class JsmolDisplay extends Component
 {
-    public string $node;
-    public string $linker;
+    public string $material_id;
+    // public string $node;
+    // public string $linker;
 
     public function render()
     {

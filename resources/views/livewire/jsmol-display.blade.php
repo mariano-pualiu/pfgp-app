@@ -3,7 +3,6 @@
     <div id="jsmol-display"></div>
 
     <script>
-
         document.addEventListener('livewire:initialized', function () {
             $(document).ready(function() {
                 let Info = {
@@ -16,9 +15,10 @@
                     disableInitialConsole: false, // shows a bunch of messages while the object is being built
                     addSelectrionOptions: false,
                     // serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
+                    serverURL: "/api/materials/{{ $material_id }}",
                     use: "HTML5",     // "HTML5" or "Java" (case-insensitive)
                     readyFunction: null, // only used in the HTML5 modality
-                    script: "load /api/mofs/ums_{{ $node }}_{{ $linker }}_opt.cif"{{-- $entry->id --}},
+                    // script: "load /api/mofs/ums_{{-- $node --}}_{{-- $linker --}}_opt.cif"{{-- $entry->id --}},
                     // menuFile: "",
                     // serverURL: "php/jsmol.php",  // this is not applied by default; you should set this value explicitly
                     bondWidth: 8,

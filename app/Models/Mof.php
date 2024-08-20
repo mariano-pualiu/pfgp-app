@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Enums;
-use App\Models\MolecularBuildingBlock;
+use App\Models\Pfgp\Molecules\BuildingBlock;
 use App\Values;
 use App\Values\VelocitiesOfSoundData;
 use App\Values\VolumeParametersData;
-use MongoDB\Laravel\Eloquent\Model;
 
 class Mof extends Model
 {
@@ -63,11 +62,11 @@ class Mof extends Model
 
     public function nodeMolecule()
     {
-        return $this->embedsOne(MolecularBuildingBlock::class, 'node');
+        return $this->embedsOne(BuildingBlock::class, 'node');
     }
 
     public function linkerMolecule()
     {
-        return $this->embedsOne(MolecularBuildingBlock::class, 'linker');
+        return $this->embedsOne(BuildingBlock::class, 'linker');
     }
 }
