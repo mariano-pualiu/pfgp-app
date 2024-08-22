@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('building_blocks', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('code');
             $table->text('elements');
             $table->string('type');

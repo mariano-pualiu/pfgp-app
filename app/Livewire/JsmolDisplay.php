@@ -2,18 +2,20 @@
 
 namespace App\Livewire;
 
-use App\Models\Mof;
+use App\Models\Material;
 use Livewire\Component;
 
 class JsmolDisplay extends Component
 {
-    public string $material_id;
-    // public string $node;
-    // public string $linker;
+    public Material $record;
+
+    public function mount(Material $record): void
+    {
+        $this->record = $record;
+    }
 
     public function render()
     {
-        // dd($this->node, $this->linker);
         return view('livewire.jsmol-display');
     }
 }

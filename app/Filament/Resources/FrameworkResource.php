@@ -18,6 +18,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Support\Enums;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Tables;
 use Filament\Tables\Actions as TablesActions;
 use Filament\Tables\Columns;
@@ -27,6 +28,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
@@ -46,23 +48,32 @@ class FrameworkResource extends Resource
     {
         return $form
             ->schema([
-                Components\Section::make('Framework Details')
-                    ->schema([
-                        Components\Select::make('type')->options(FrameworkTypeEnum::class),
-                        Components\TextInput::make('name')->required()->rules(['min:5']),
-                    ])
-                    ->columns(2),
-                Components\Section::make('Materials Display Details')
-                    ->schema([
-                        Components\Repeater::make('sections')
-                            ->schema([
-                                Components\TextInput::make('name')->required(),
-                                Components\TextInput::make('columns')->integer()->required(),
+                Components\Select::make('type')->options(FrameworkTypeEnum::class),
+                Components\TextInput::make('name')->required()->rules(['min:5']),
+                // Components\Section::make('Materials Display Details')
+                //     ->schema([
+                //         Components\Repeater::make('sections')
+                //             ->schema([
+                //                 Components\TextInput::make('name')
+                //                     ->required()
+                //                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'The name of the section that groups related values')
+                //                     ->placeholder('The section\'s name'),
+                //                 Components\TextInput::make('columns')
+                //                     ->integer()
+                //                     ->in([1, 2, 3, 4])
+                //                     ->required()
+                //                     ->default(3)
+                //                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'The number of columns this section will be segmented in (1-4)')
+                //                     ->placeholder('The section\'s number of columns'),
 
-                                Components\Textarea::make('description')->required()->columnSpan(2),
-                            ])
-                    ])
-                    ->columns(1),
+                //                 Components\Textarea::make('description')
+                //                     ->required()
+                //                     ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'A clarifying description for the data this section groups')
+                //                     ->placeholder('A description for the section\'s data')
+                //                     ->columnSpan(2),
+                //             ])
+                //     ])
+                //     ->columns(1),
 
                     // Components\Select::make('visibility')
                     //     ->label("Display Visibility")
@@ -77,18 +88,28 @@ class FrameworkResource extends Resource
     {
         return $table
             ->columns([
-                Columns\TextColumn::make('type')->sortable()->searchable(),
-                Columns\TextColumn::make('name')->sortable()->searchable(),
-                // Columns\SelectColumn::make('type')
-                //     ->label('Type')
-                //     ->options(FrameworkTypeEnum::class)
-                //     ->selectablePlaceholder(false),
-                    // ->searchable(),
-                // Columns\TextInputColumn::make('name')
+                // Columns\TextColumn::make('type')
+                //     ->state(fn (Framework $framework) => $framework->type->name)
                 //     ->sortable()
-                //     ->label('Name')
                 //     ->searchable(),
+                // Columns\TextColumn::make('name')
+                //     ->sortable()
+                //     ->searchable(),
+                Columns\SelectColumn::make('type')
+                    ->label('Type')
+                    ->sortable()
+                    ->searchable()
+                    ->options(FrameworkTypeEnum::class)
+                    ->selectablePlaceholder(false)
+                    ->searchable(),
+                Columns\TextInputColumn::make('name')
+                    ->sortable()
+                    ->label('Name')
+                    ->searchable(),
                 Columns\TextColumn::make('materials_count')->counts('materials'),
+                Columns\TextColumn::make('sections_count')
+                    // ->tooltip(fn (Framework $framework) => Blade::render('<ol>@foreach($sections as $section)<li>{{ $section }}</li>@endforeach</ol>', ['sections' => $framework->sections->pluck('name')])),
+                    // ->tooltip(fn (Framework $framework) => $framework->sections->pluck('name')),
                 // Columns\SelectColumn::make('visibility')
                 //     ->label('Visibility')
                 //     ->options(array_flip(VisibilityEnum::opciones()))
@@ -100,42 +121,74 @@ class FrameworkResource extends Resource
             ])
             ->actions([
                 // TablesActions\ViewAction::make(),
-                TablesActions\EditAction::make(),
-                TablesActions\Action::make('properties')
-                    ->label('Properties')
-                    ->url(fn (Framework $framework) => route('filament.admin.resources.frameworks.properties', $framework->id))
-                    ->color('primary')
-                    ->icon('heroicon-s-adjustments-horizontal'),
-                    /*->using(function (Framework $framework, array $data): Framework {
-                        // dump($framework, $data);
-                        $framework->update($data);
+                TablesActions\EditAction::make()
+                    ->label('Sections')
+                    ->recordTitle('Framework Sections')
+                    ->icon('heroicon-o-rectangle-group')
+                    ->form([
+                        Components\Repeater::make('sections')
+                            ->schema([
+                                Components\TextInput::make('name')
+                                    ->required()
+                                    ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'The name of the section that groups related values')
+                                    ->placeholder('The section\'s name'),
+                                Components\TextInput::make('columns')
+                                    ->integer()
+                                    ->in([1, 2, 3, 4])
+                                    ->required()
+                                    ->default(3)
+                                    ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'The number of columns this section will be segmented in (1-4)')
+                                    ->placeholder('The section\'s number of columns'),
+                                Components\Textarea::make('description')
+                                    ->required()
+                                    ->hintIcon('heroicon-m-question-mark-circle', tooltip: 'A clarifying description for the data this section groups')
+                                    ->placeholder('A description for the section\'s data')
+                                    ->columnSpan(2),
+                            ])
+                    ])
+                    ->stickyModalHeader()
+                    ->stickyModalFooter(),
+                    // ->mutateFormDataUsing(fn (Framework $record, array $data) => dd($data)),
+                TablesActions\ActionGroup::make([
+                    TablesActions\Action::make('properties')
+                        ->label('Properties')
+                        ->url(fn (Framework $framework) => route('filament.admin.resources.frameworks.properties', $framework->id))
+                        ->icon('heroicon-s-adjustments-horizontal')
+                        ->tooltip('View Framework\'s properties'),
+                        /*->using(function (Framework $framework, array $data): Framework {
+                            // dump($framework, $data);
+                            $framework->update($data);
 
-                        return $framework;
-                    })*/
-                // Tables\Actions\EditAction::make()
-                //     ->label('Sections')
-                //     ->icon('heroicon-s-square-3-stack-3d')
-                //     ->form([
+                            return $framework;
+                        })*/
+                    // Tables\Actions\EditAction::make()
+                    //     ->label('Sections')
+                    //     ->icon('heroicon-s-square-3-stack-3d')
+                    //     ->form([
 
-                //     ]),
-                TablesActions\Action::make('view_framework_materials')
-                    ->label('Materials')
-                    ->icon('heroicon-s-table-cells')
-                    ->size(Enums\ActionSize::Large)
-                    ->tooltip('View Framework\'s materials')
-                    /*->url(
-                        function (Framework $framework): string {
-                            return route(
-                                'filament.admin.resources.mofs.index',
-                                ['activeTab' => 'framework', '_id' => $framework->_id]
-                            );
-                        }
-                    )*/,
+                    //     ]),
+                    TablesActions\Action::make('view_framework_materials')
+                        ->label('Materials')
+                        ->icon('heroicon-s-table-cells')
+                        // ->size(Enums\ActionSize::Large)
+                        ->url(fn (Framework $framework) => route('filament.admin.resources.frameworks.materials', $framework->id))
+                        ->tooltip('View Framework\'s materials')
+                        /*->url(
+                            function (Framework $framework): string {
+                                return route(
+                                    'filament.admin.resources.mofs.index',
+                                    ['activeTab' => 'framework', '_id' => $framework->_id]
+                                );
+                            }
+                        )*/,
+                    ])
+                    ->label('Content')
+                    ->icon('heroicon-m-server-stack')
+                    ->button(),
                 TablesActions\ActionGroup::make([
                     TablesActions\Action::make('import_materials_data')
                         ->label('Upload Materials')
                         ->icon('heroicon-m-document-arrow-up')
-                        ->size(Enums\ActionSize::Large)
                         ->tooltip('Upload Material Data (XLSX)')
                         ->form([
                             // Placeholder::make("Descargar layout de muestra")->content(
@@ -222,7 +275,10 @@ class FrameworkResource extends Resource
                                     ->send();
                             }
                         }),
-                ]),
+                ])
+                    ->label('Imports')
+                    ->icon('heroicon-m-arrow-up-tray')
+                    ->button(),
             ])
             // ->bulkActions([
             //     TablesActions\BulkActionGroup::make([

@@ -6,6 +6,7 @@ use App\Casts\SectionsCast;
 use App\Enums\FrameworkTypeEnum;
 use App\Enums\VisibilityEnum;
 use App\Models\Material;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations;
@@ -13,40 +14,33 @@ use Illuminate\Database\Eloquent\Relations;
 class Framework extends Model
 {
     use HasFactory;
+    use HasUlids;
 
     protected $table = 'frameworks';
 
     protected $fillable = [
         'type',
         'name',
-        // 'visibility',
         'sections',
     ];
 
     protected $attributes = [
         'type'        => FrameworkTypeEnum::MOF,
         'name'        => '',
-        // 'visibility'  => VisibilityEnum::PRIVATE,
-        // 'shared_with' => "[]",
+        'sections'        => '[]',
     ];
 
     protected $casts = [
         'type'           => FrameworkTypeEnum::class,
-        'visibility'     => VisibilityEnum::class,
-        // 'shared_with' => 'array',
         'sections'       => SectionsCast::class,
     ];
 
     # Accessors
 
-    /**
-     * TODO: Cache the counting result forever until materials are added or removed
-     * @return [type] [description]
-     */
-    // public function getMaterialsCountAttribute()
-    // {
-    //     return $this->materials()->count();
-    // }
+    public function getSectionsCountAttribute()
+    {
+        return count($this->sections);
+    }
 
     # Relationships
 

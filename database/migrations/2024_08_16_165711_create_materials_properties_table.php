@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('materials_properties', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->text('value')->nullable()->default(null);
-            $table->foreignId('material_id')->constrained(table: 'materials');
-            $table->foreignId('property_id')->constrained(table: 'properties');
+            $table->foreignUlid('material_id')->constrained(table: 'materials');
+            $table->foreignUlid('property_id')->constrained(table: 'properties');
             // Add a foreign key for the building_block_id
-            $table->nullableMorphs('specification');  // Adds specification_id and specification_type columns
+            $table->nullableUlidMorphs('specification');  // Adds specification_id and specification_type columns
             $table->timestamps();
         });
     }

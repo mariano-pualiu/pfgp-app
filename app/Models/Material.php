@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations;
@@ -13,6 +14,7 @@ class Material extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;
+    use HasUlids;
 
     protected $table = 'materials';
 

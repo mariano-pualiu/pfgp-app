@@ -2,11 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\FrameworkTypeEnum;
 use App\Filament\Resources\MaterialResource\Pages;
 use App\Filament\Resources\MaterialResource\RelationManagers;
+use App\Infolists\Components\JsMolDisplayEntry;
+use App\Livewire\JsmolDisplay;
 use App\Models\Material;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Livewire;
+use Filament\Infolists\Components\Section;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -32,7 +37,11 @@ class MaterialResource extends Resource
     {
         return $infolist
             ->schema([
-                // ...
+                Section::make('MOF JsMol')
+                    ->schema([
+                        Livewire::make(JsmolDisplay::class)->lazy(),
+                        // JsMolDisplayEntry::make('Visualization'),
+                    ]),
             ]);
     }
 
@@ -53,10 +62,15 @@ class MaterialResource extends Resource
                         => Str::of($state)->replace('_', ' ')->upper()->toString())
                     ->searchable()
                     ->sortable(),
+                Columns\TextColumn::make('framework.type')
+                    ->formatStateUsing(fn (FrameworkTypeEnum $state): string => $state->name)
+                    ->searchable()
+                    ->sortable(),
                 Columns\TextColumn::make('framework.name')
             ])
             ->filters([
-                SelectFilter::make('framework')->relationship('framework', 'name')
+                SelectFilter::make('framework')->relationship('framework', 'name'),
+                SelectFilter::make('framework')->relationship('framework', 'type')
             ])
             ->actions([
                 TablesActions\ViewAction::make()

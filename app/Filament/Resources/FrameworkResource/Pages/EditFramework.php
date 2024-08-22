@@ -20,7 +20,7 @@ class EditFramework extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        dd($record);
+        dd($data);
         $record->update($data);
 
         return $record;

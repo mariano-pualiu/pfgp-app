@@ -9,18 +9,13 @@ use Spatie\LaravelData\Optional;
 
 class SectionData extends Data
 {
-    // #[Computed]
-    // public string $_id;
-
     public function __construct(
-        // public string $_id,
+        public ?string $id = null,
         public string $name,
-        // public string $icon,
         public string $description,
         public int $columns = 3,
-        // public string $units,
     )
     {
-        // $this->_id ??= Str::ulid();
+        $this->id ??= Str::ulid();
     }
 }

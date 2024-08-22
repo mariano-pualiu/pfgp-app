@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\FrameworkResource\Pages;
 
 use App\Filament\Resources\FrameworkResource;
+use App\Models\Framework;
 use App\Models\Property;
 use Filament\Actions;
 use Filament\Forms;
@@ -22,10 +23,12 @@ class ManageFrameworkProperties extends ManageRelatedRecords
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function getNavigationLabel(): string
-    {
-        return 'Properties';
-    }
+    // public static function getNavigationLabel(): string
+    // {
+    //     $framework = Framework::find(request()->route('record'));
+
+    //     return ($framework ? $framework->name . ' ' : '') . 'Properties';
+    // }
 
     public function form(Form $form): Form
     {
@@ -50,7 +53,7 @@ class ManageFrameworkProperties extends ManageRelatedRecords
                 Tables\Columns\SelectColumn::make('entry->section')
                     ->label('Display Section')
                     ->state(fn (Property $property) => $property->entry->section)
-                    ->options(fn (): array => $this->getOwnerRecord()->sections->pluck('name')->toArray())
+                    ->options(fn (): array => $this->getOwnerRecord()->sections->pluck('name', 'id')->toArray())
                     ->placeholder('Select a Section')
                     ->searchable(),
                 Tables\Columns\TextInputColumn::make('entry->tooltip')

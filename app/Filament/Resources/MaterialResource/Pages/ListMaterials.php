@@ -24,8 +24,42 @@ class ListMaterials extends ListRecords
     {
         return [
             'all'  => Tab::make(),
-            'mofs' => Tab::make('MOFs')->modifyQueryUsing(fn (Builder $query) => $query->whereHas('framework', fn ($framework) => $framework->where('type', FrameworkTypeEnum::MOF))),
-            'cofs' => Tab::make('COFs')->modifyQueryUsing(fn (Builder $query) => $query->whereHas('framework', fn ($framework) => $framework->where('type', FrameworkTypeEnum::COF))),
+            'mofs' => Tab::make('MOFs')
+                ->modifyQueryUsing(fn (Builder $query)
+                    => $query->whereHas('framework', fn ($framework)
+                        => $framework->where('type', FrameworkTypeEnum::MOF)
+                    )
+                ),
+            'cofs' => Tab::make('COFs')
+                ->modifyQueryUsing(fn (Builder $query)
+                    => $query->whereHas('framework', fn ($framework)
+                        => $framework->where('type', FrameworkTypeEnum::COF)
+                    )
+                ),
+            'zifs' => Tab::make('ZIFs')
+                ->modifyQueryUsing(fn (Builder $query)
+                    => $query->whereHas('framework', fn ($framework)
+                        => $framework->where('type', FrameworkTypeEnum::ZIF)
+                    )
+                ),
+            'zeolites' => Tab::make('ZEOLITES')
+                ->modifyQueryUsing(fn (Builder $query)
+                    => $query->whereHas('framework', fn ($framework)
+                        => $framework->where('type', FrameworkTypeEnum::ZEOLITE)
+                    )
+                ),
+            'pops' => Tab::make('POPs')
+                ->modifyQueryUsing(fn (Builder $query)
+                    => $query->whereHas('framework', fn ($framework)
+                        => $framework->where('type', FrameworkTypeEnum::POP)
+                    )
+                ),
+            'sofs' => Tab::make('SOFs')
+                ->modifyQueryUsing(fn (Builder $query)
+                    => $query->whereHas('framework', fn ($framework)
+                        => $framework->where('type', FrameworkTypeEnum::SOF)
+                    )
+                ),
         ];
     }
 }

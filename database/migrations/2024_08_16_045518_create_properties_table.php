@@ -12,12 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('properties', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('name');
-            $table->bool('highlight')->default(false);
+            $table->boolean('highlight')->default(false);
             $table->json('entry');
-            $table->foreignId('framework_id')->constrained(table: 'frameworks');
-            $table->morphs('propertyable');
+            $table->foreignUlid('framework_id')->constrained(table: 'frameworks');
             $table->timestamps();
         });
     }

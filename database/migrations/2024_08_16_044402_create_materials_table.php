@@ -12,16 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('materials', function (Blueprint $table) {
-            $table->id();
+            $table->ulid('id')->primary();
             $table->string('name');
-            // $table->text('properties');
 
             // $table->string('visibility');
             // $table->text('shared_with');
 
-            $table->foreignId('framework_id')->constrained(table: 'frameworks');
-            $table->foreignId('node_id')->constrained(table: 'nodes');
-            $table->foreignId('linker_id')->constrained(table: 'linkers');
+            $table->foreignUlid('framework_id')->constrained(table: 'frameworks');
             $table->timestamps();
         });
     }

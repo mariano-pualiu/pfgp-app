@@ -4,12 +4,15 @@ namespace App\Filament\Resources\FrameworkResource\Pages;
 
 use App\Filament\Resources\FrameworkResource;
 use App\Infolists\Components\JsMolDisplayEntry;
+use App\Livewire\JsmolDisplay;
+use App\Models\Framework;
 use App\Models\Material;
 use App\Models\Property;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components as InfoListComponents;
+use Filament\Infolists\Components\Livewire;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ManageRelatedRecords;
 use Filament\Support\Enums\MaxWidth;
@@ -20,6 +23,7 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class ManageFrameworkMaterials extends ManageRelatedRecords
@@ -29,11 +33,6 @@ class ManageFrameworkMaterials extends ManageRelatedRecords
     protected static string $relationship = 'materials';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    public static function getNavigationLabel(): string
-    {
-        return 'Materials';
-    }
 
     public function form(Form $form): Form
     {
@@ -47,8 +46,9 @@ class ManageFrameworkMaterials extends ManageRelatedRecords
     {
         $framework = $this->getOwnerRecord();
 
-        $highlightedPropertycolumns = $framework->highlightedProperties->map(fn ($property) => Tables\Columns\TextColumn::make('highlightedProperties.' . $property->name)
-                ->label($property->entry->label)
+        $highlightedPropertycolumns = $framework->highlightedProperties
+            ->map(fn ($property) => Tables\Columns\TextColumn::make('highlightedProperties.' . $property->name)
+                ->label(Str::of($property->entry->label)->replace('_', ' ')->title()->toString())
                 ->state(fn (Material $material) => $material->displaying_properties->get($property->name)->material_property->value)
                 ->searchable(query: fn (Builder $query, string $search): Builder =>
                     $query->whereHas('highlightedProperties', function ($query) use ($search) {
@@ -61,6 +61,7 @@ class ManageFrameworkMaterials extends ManageRelatedRecords
             ->modifyQueryUsing(fn (Builder $query) => $query->with('highlightedProperties'))
             ->recordTitleAttribute('name')
             ->columns([
+                Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('name'),
                 ...$highlightedPropertycolumns,
             ])
@@ -94,39 +95,43 @@ class ManageFrameworkMaterials extends ManageRelatedRecords
     public function infolist(Infolist $infolist): Infolist
     {
         $framework = $this->getOwnerRecord();
+        $sectionsOrder = $framework->sections->pluck('id')->flip();
 
         $infoListDisplayingSections = $this->cachedMountedTableActionRecord
             ->properties
             ->reject(fn ($property) => $property->entry->section == "")
             ->groupBy(fn ($property) => $property->entry->section)
-            ->map(function ($properties, $sectionName) use ($framework) {
-                [$fieldSetProperties, $properties] = $properties->partition(fn ($property) => $property->entry->fieldSet);
+            ->sortBy(fn ($groupedProperties, $sectionId) => Arr::get($sectionsOrder, $sectionId))
+            ->map(function ($groupedProperties, $sectionId) use ($framework) {
+                [$inFieldSetProperties, $standAloneProperties] = $groupedProperties->partition(fn ($property) => $property->entry->fieldSet);
 
-                $properties->transform(fn ($property)
+                $standAloneProperties->transform(fn ($property)
                     => InfoListComponents\TextEntry::make('property.' . $property->name)
-                        ->label($property->entry->label)
+                        ->label(Str::of($property->entry->label)->replace('_', ' ')->title()->toString())
                         ->state(fn () => $property->material_property->value)
                         ->placeholder('Value not yet calculated'));
 
-                $fieldSetProperties = $fieldSetProperties
+                $inFieldSetProperties = $inFieldSetProperties
                     ->groupBy(fn ($property) => $property->entry->fieldSet)
                     ->map(function ($fieldSet, $fieldSetName) {
                         return InfoListComponents\Fieldset::make($fieldSetName)
-                            ->schema($fieldSet->map(fn ($property)
-                                => InfoListComponents\TextEntry::make('property.' . $property->name)
-                                    ->label($property->entry->label)
+                            ->schema($fieldSet->map(function ($property) {
+
+                                return InfoListComponents\TextEntry::make('property.' . $property->name)
+                                    ->label(Str::of($property->entry->label)->replace('_', ' ')->title()->toString())
                                     ->state(fn () => $property->material_property->value)
-                                    ->placeholder('Value not yet calculated')
-                                )->all()
+                                    ->placeholder('Value not yet calculated');
+                                })->all()
                             )
                             ->columns(3);
                     });
 
-                $section = $framework->sections->get($sectionName);
+                $section = $framework->sections->firstWhere('id', $sectionId);
+                // dump($section, $sectionId);
 
                 return InfoListComponents\Section::make($section->name)
                     ->description($section->description)
-                    ->schema($properties->concat($fieldSetProperties)->all())
+                    ->schema($standAloneProperties->concat($inFieldSetProperties)->all())
                     ->columns($section->columns)
                     ->aside();
             });
@@ -138,9 +143,10 @@ class ManageFrameworkMaterials extends ManageRelatedRecords
             ->schema([
                 InfoListComponents\Section::make('MOF JsMol')
                     ->schema([
-                        JsMolDisplayEntry::make('Visualization'),
+                        // JsMolDisplayEntry::make('Visualization'),
+                        Livewire::make(JsmolDisplay::class)->lazy(),
                     ]),
-                ...$infoListDisplayingSections
+                // ...$infoListDisplayingSections
             ]);
     }
 }
