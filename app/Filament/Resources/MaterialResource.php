@@ -57,20 +57,23 @@ class MaterialResource extends Resource
     {
         return $table
             ->columns([
+                Columns\TextColumn::make('id'),
                 Columns\TextColumn::make('name')
                     ->formatStateUsing(fn (string $state): string
                         => Str::of($state)->replace('_', ' ')->upper()->toString())
                     ->searchable()
                     ->sortable(),
                 Columns\TextColumn::make('framework.type')
+                    ->label('Framework Type')
                     ->formatStateUsing(fn (FrameworkTypeEnum $state): string => $state->name)
                     ->searchable()
                     ->sortable(),
                 Columns\TextColumn::make('framework.name')
+                    ->label('Framework Name')
             ])
             ->filters([
-                SelectFilter::make('framework')->relationship('framework', 'name'),
-                SelectFilter::make('framework')->relationship('framework', 'type')
+                SelectFilter::make('framework.name')->relationship('framework', 'name')->label('Framework Name'),
+                // SelectFilter::make('framework.type')->relationship('framework', 'type')->label('Framework Name')
             ])
             ->actions([
                 TablesActions\ViewAction::make()

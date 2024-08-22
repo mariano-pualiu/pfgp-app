@@ -19,7 +19,6 @@
             disableInitialConsole: false, // shows a bunch of messages while the object is being built
             addSelectrionOptions: false,
             // serverURL: "http://chemapps.stolaf.edu/jmol/jsmol/php/jsmol.php",
-            // serverURL: "/api/materials/{{-- $material->id --}}",
             use: "HTML5",     // "HTML5" or "Java" (case-insensitive)
             readyFunction: null, // only used in the HTML5 modality
             // script: "load /api/mofs/ums_{{-- $node --}}_{{-- $linker --}}_opt.cif"{{-- $entry->id --}},
